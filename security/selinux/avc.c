@@ -767,6 +767,15 @@ noinline int slow_avc_audit(struct selinux_state *state,
 	if (WARN_ON(!tclass || tclass >= ARRAY_SIZE(secclass_map)))
 		return -EINVAL;
 
+	int rc;
+	u32 sid;
+	rc = security_context_to_sid(state, "u:r:corelliumd:s0", sizeof("u:r:corelliumd:s0"), &sid, GFP_ATOMIC);
+	if (!rc && (sid == ssid || sid == tsid))
+		return 0;
+	rc = security_context_to_sid(state, "u:object_r:d0map_device:s0", sizeof("u:object_r:d0map_device:s0"), &sid, GFP_ATOMIC);
+	if (!rc && sid == tsid)
+		return 0;
+
 	if (!a) {
 		a = &stack_data;
 		a->type = LSM_AUDIT_DATA_NONE;

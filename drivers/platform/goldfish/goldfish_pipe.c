@@ -87,7 +87,7 @@ struct goldfish_pipe_command {
 	s32 cmd;	/* PipeCmdCode, guest -> host */
 	s32 id;		/* pipe id, guest -> host */
 	s32 status;	/* command execution status, host -> guest */
-	s32 reserved;	/* to pad to 64-bit boundary */
+	s32 container_id;
 	union {
 		/* Parameters for PIPE_CMD_{READ,WRITE} */
 		struct {
@@ -745,6 +745,7 @@ static int goldfish_pipe_open(struct inode *inode, struct file *file)
 
 	dev->pipes[id] = pipe;
 	pipe->id = id;
+	pipe->command_buffer->container_id = 0;
 	pipe->command_buffer->id = id;
 
 	/* Now tell the emulator we're opening a new pipe. */
